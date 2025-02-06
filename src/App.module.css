@@ -1,0 +1,18 @@
+/* Note: to use css modules i need to use the keyword MODULE instead of MODULES which was giving me an default import error */
+.instructions{
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  width: 30%;
+}
+
+.instructions > h3{
+  font-size: 20px;
+  font-weight: 500;
+  margin: 0;
+}
+
+.secondary{
+  color: #8E8E8E;
+  margin: 0;
+}
