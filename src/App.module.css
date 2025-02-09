@@ -1,18 +1,105 @@
 /* Note: to use css modules i need to use the keyword MODULE instead of MODULES which was giving me an default import error */
-.instructions{
+.instructions {
   display: flex;
   flex-direction: column;
   text-align: center;
   width: 30%;
 }
 
-.instructions > h3{
-  font-size: 20px;
+.instructions > h3 {
+  font-size: 1.6rem;
   font-weight: 500;
+  margin: 0.6rem 0;
+}
+
+.secondary {
+  color: #8e8e8e;
   margin: 0;
 }
 
-.secondary{
-  color: #8E8E8E;
-  margin: 0;
+.statusMessage {
+  background-color: blueviolet;
+  text-align: center;
+  margin-top: 20px;
+}
+
+.statusMessage.victory {
+  background-color: #10a95b;
+  border-radius: 4px;
+}
+
+.statusMessage.victory > * {
+  margin: 0.5rem;
+}
+
+.statusMessage.victory > h2 {
+  font-size: 1.5rem;
+  font-weight: 500;
+}
+
+.statusMessage.victory > p {
+  font-size: 1rem;
+}
+
+.languageChips {
+  display: flex;
+  justify-content: center;
+  max-width: 25%;
+  gap: 2px;
+  flex-wrap: wrap;
+}
+
+.chip {
+  font-size: 0.8rem;
+  font-weight: 700;
+  border-radius: 3px;
+  padding: 0.4rem 0.4rem;
+}
+
+section.word {
+  display: flex;
+  font-size: 1.4rem;
+  gap: 2px;
+}
+
+span.letter {
+  background-color: #323232;
+  color: #F9F4DA;
+  width: 2.8rem;
+  height: 2.8rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-bottom: #F9F4DA solid 2px;
+}
+
+section.keyboard{
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  width: 40%;
+  justify-content: center;
+}
+
+button.key{
+  background-color: #FCBA29;
+  color: #1E1E1E;
+  border: #D7D7D7 1px solid;
+  width: 2.8rem;
+  height: 2.8rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+button.newGameBtn{
+  background-color: #11B5E5;
+  border: none;
+  border-radius: 4px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  height: 2.8rem;
+  width:  20%;
+  cursor: pointer;
 }
