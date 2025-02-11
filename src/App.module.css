@@ -9,7 +9,7 @@
 .instructions > h3 {
   font-size: 1.6rem;
   font-weight: 500;
-  margin: 0.6rem 0;
+  margin: 0.4rem 0;
 }
 
 .secondary {
@@ -91,6 +91,14 @@ button.key{
   font-weight: 600;
   border-radius: 4px;
   cursor: pointer;
+}
+
+button.key.correct{
+  background-color: #10a95b;
+}
+
+button.key.wrong{
+  background-color: #EC5D49;
 }
 
 button.newGameBtn{

@@ -1,11 +1,20 @@
 import { useState } from "react";
 import styles from "./App.module.css";
 import { languages } from "./languages.js";
+import clsx from "clsx";
 
 function App() {
   const [currentWord, setCurrentWord] = useState("react");
+  const [guessedLetters, setGuessedLetters] = useState([]);
+  console.log(guessedLetters);
 
   const alphabet = "abcdefghijklmnopqrstuvwxyz";
+
+  function registerLetter(letter) {
+    setGuessedLetters((prevLetters) =>
+      prevLetters.includes(letter) ? prevLetters : [...prevLetters, letter]
+    );
+  }
 
   const languageElements = languages.map((langObj) => {
     const chipStyles = {
@@ -25,11 +34,31 @@ function App() {
     </span>
   ));
 
-  const keyboardElements = alphabet.split("").map((letter) => (
-    <button className={styles.key} key={letter}>
-      {letter.toUpperCase()}
-    </button>
-  ));
+  const keyboardElements = alphabet.split("").map((letter) => {
+    // console.log("KEYBOARDELEMENTS RENDERING");
+
+    const isGuessed = guessedLetters.includes(letter);
+    const isCorrect = isGuessed && currentWord.includes(letter);
+    const isWrong = isGuessed && !currentWord.includes(letter);
+
+    const keyClassName = clsx({
+      correct: isCorrect,
+      wrong: isWrong,
+    });
+
+    console.log(keyClassName);
+
+    return (
+      <button
+        // This is a way i found to add the classnames since using template literals didnt work with styles.keyClassName
+        className={[styles.key, styles[keyClassName]].join(' ')}
+        key={letter}
+        onClick={() => registerLetter(letter)}
+      >
+        {letter.toUpperCase()}
+      </button>
+    );
+  });
 
   return (
     <>
@@ -39,7 +68,7 @@ function App() {
           Guess the word in under 8 attempts to keep the programming world safe
           from Assembly!
         </p>
-        
+
         <div className={`${styles.statusMessage} ${styles.victory}`}>
           <h2>You Win!</h2>
           <p>Well done! 🎉</p>
