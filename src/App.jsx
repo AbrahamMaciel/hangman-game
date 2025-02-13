@@ -4,11 +4,29 @@ import { languages } from "./languages.js";
 import clsx from "clsx";
 
 function App() {
+  // State values
   const [currentWord, setCurrentWord] = useState("react");
   const [guessedLetters, setGuessedLetters] = useState([]);
-  console.log(guessedLetters);
 
+  // Derived values
+  const wrongGuessCount = guessedLetters.filter(
+    (letter) => !currentWord.includes(letter)
+  ).length;
+
+  const isGameLost = wrongGuessCount >= languages.length - 1;
+
+  const isGameWon = currentWord
+    .split("")
+    .every((letter) => guessedLetters.includes(letter));
+
+  const isGameOver = isGameLost || isGameWon;
+
+  // Static values
   const alphabet = "abcdefghijklmnopqrstuvwxyz";
+
+  console.log(wrongGuessCount);
+  console.log("over: ", isGameLost);
+  console.log("won: ", isGameWon);
 
   function registerLetter(letter) {
     setGuessedLetters((prevLetters) =>
@@ -16,27 +34,35 @@ function App() {
     );
   }
 
-  const languageElements = languages.map((langObj) => {
+  const languageElements = languages.map((langObj, index) => {
     const chipStyles = {
       backgroundColor: langObj.backgroundColor,
       color: langObj.color,
     };
+
     return (
-      <span style={chipStyles} className={styles.chip} key={langObj.name}>
+      <span
+        style={chipStyles}
+        className={[
+          styles.chip,
+          index < wrongGuessCount ? styles.lost : null,
+        ].join(" ")}
+        key={langObj.name}
+      >
         {langObj.name}
       </span>
     );
   });
 
-  const lettersElements = currentWord.split("").map((letter, index) => (
-    <span key={index} className={styles.letter}>
-      {letter.toUpperCase()}
-    </span>
-  ));
+  const lettersElements = currentWord.split("").map((letter, index) => {
+    return (
+      <span key={index} className={styles.letter}>
+        {guessedLetters.includes(letter) ? letter.toUpperCase() : null}
+      </span>
+    );
+  });
 
   const keyboardElements = alphabet.split("").map((letter) => {
-    // console.log("KEYBOARDELEMENTS RENDERING");
-
     const isGuessed = guessedLetters.includes(letter);
     const isCorrect = isGuessed && currentWord.includes(letter);
     const isWrong = isGuessed && !currentWord.includes(letter);
@@ -46,12 +72,10 @@ function App() {
       wrong: isWrong,
     });
 
-    console.log(keyClassName);
-
     return (
       <button
         // This is a way i found to add the classnames since using template literals didnt work with styles.keyClassName
-        className={[styles.key, styles[keyClassName]].join(' ')}
+        className={[styles.key, styles[keyClassName]].join(" ")}
         key={letter}
         onClick={() => registerLetter(letter)}
       >
@@ -81,9 +105,11 @@ function App() {
 
       <section className={styles.keyboard}>{keyboardElements}</section>
 
-      <button type="button" className={styles.newGameBtn}>
-        New Game
-      </button>
+      {isGameOver && (
+        <button type="button" className={styles.newGameBtn}>
+          New Game
+        </button>
+      )}
     </>
   );
 }
