@@ -2,6 +2,7 @@ import { useState } from "react";
 import styles from "./App.module.css";
 import { languages } from "./languages.js";
 import clsx from "clsx";
+import { getFarewellText } from "./utils.js";
 
 function App() {
   // State values
@@ -21,12 +22,62 @@ function App() {
 
   const isGameOver = isGameLost || isGameWon;
 
+  const lastGuessedLetter = guessedLetters[guessedLetters.length - 1];
+
+  const isLastGuessWrong =
+    lastGuessedLetter && !currentWord.includes(lastGuessedLetter);
+
+  // This should give as basis the class statusMessage and the other 3 depending of their current value, though i dont know yet how would i have to use it with css modules since is a bit different, maybe a join.
+  const statusMessageClass = clsx({
+    warning: !isGameOver && isLastGuessWrong,
+    victory: isGameWon,
+    defeat: isGameLost,
+  });
+
   // Static values
   const alphabet = "abcdefghijklmnopqrstuvwxyz";
 
-  console.log(wrongGuessCount);
-  console.log("over: ", isGameLost);
-  console.log("won: ", isGameWon);
+  // Helper function
+  function renderGameStatus() {
+    if (isGameOver) {
+      if (isGameWon) {
+        return (
+          <>
+            <h2>You win!</h2>
+            <p>Well done! 🎉</p>
+          </>
+        );
+      } else if (isGameLost) {
+        return (
+          <>
+            <h2>Game over!</h2>
+            <p>You lose! Better start learning Assembly 😭</p>
+          </>
+        );
+      }
+    } else {
+      if (isLastGuessWrong) {
+        return (
+          <>
+            <p>{getFarewellText(languages[wrongGuessCount - 1].name)}</p>
+          </>
+        );
+      } else {
+        return (
+          <>
+            <h2>All's good!</h2>
+            <p>Yay lots of choice, the world is safe!</p>
+          </>
+        );
+      }
+    }
+  }
+
+  // console.log(wrongGuessCount);
+  // console.log("over: ", isGameLost);
+  // console.log("won: ", isGameWon);
+  // console.log("lastguessiswrong?: ", isLastGuessWrong);
+  // console.log("statusMessageClass/es: ", statusMessageClass);
 
   function registerLetter(letter) {
     setGuessedLetters((prevLetters) =>
@@ -92,12 +143,13 @@ function App() {
           Guess the word in under 8 attempts to keep the programming world safe
           from Assembly!
         </p>
-
-        <div className={`${styles.statusMessage} ${styles.victory}`}>
-          <h2>You Win!</h2>
-          <p>Well done! 🎉</p>
-        </div>
       </header>
+
+      <section
+        className={[styles.statusMessage, styles[statusMessageClass]].join(" ")}
+      >
+        {renderGameStatus()}
+      </section>
 
       <section className={styles.languageChips}>{languageElements}</section>
 
