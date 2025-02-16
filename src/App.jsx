@@ -2,19 +2,22 @@ import { useState } from "react";
 import styles from "./App.module.css";
 import { languages } from "./languages.js";
 import clsx from "clsx";
-import { getFarewellText } from "./utils.js";
+import { getFarewellText, getRandomWord } from "./utils.js";
+import ReactConfetti from "react-confetti";
 
 function App() {
   // State values
-  const [currentWord, setCurrentWord] = useState("react");
+  const [currentWord, setCurrentWord] = useState(() => getRandomWord());
   const [guessedLetters, setGuessedLetters] = useState([]);
 
   // Derived values
+  const numGuessesLeft = languages.length - 1;
+
   const wrongGuessCount = guessedLetters.filter(
     (letter) => !currentWord.includes(letter)
   ).length;
 
-  const isGameLost = wrongGuessCount >= languages.length - 1;
+  const isGameLost = wrongGuessCount >= numGuessesLeft;
 
   const isGameWon = currentWord
     .split("")
@@ -73,11 +76,17 @@ function App() {
     }
   }
 
+  function startNewGame() {
+    setCurrentWord(getRandomWord());
+    setGuessedLetters([]);
+  }
+
   // console.log(wrongGuessCount);
   // console.log("over: ", isGameLost);
   // console.log("won: ", isGameWon);
   // console.log("lastguessiswrong?: ", isLastGuessWrong);
   // console.log("statusMessageClass/es: ", statusMessageClass);
+  // console.log(currentWord);
 
   function registerLetter(letter) {
     setGuessedLetters((prevLetters) =>
@@ -107,8 +116,18 @@ function App() {
 
   const lettersElements = currentWord.split("").map((letter, index) => {
     return (
-      <span key={index} className={styles.letter}>
-        {guessedLetters.includes(letter) ? letter.toUpperCase() : null}
+      <span
+        key={index}
+        className={[
+          styles.letter,
+          isGameLost && !guessedLetters.includes(letter) && styles.wrong,
+        ].join(" ")}
+      >
+        {!isGameOver && guessedLetters.includes(letter)
+          ? letter.toUpperCase()
+          : null}
+        {isGameOver && isGameLost && letter.toUpperCase()}
+        {isGameOver && isGameWon && letter.toUpperCase()}
       </span>
     );
   });
@@ -129,6 +148,9 @@ function App() {
         className={[styles.key, styles[keyClassName]].join(" ")}
         key={letter}
         onClick={() => registerLetter(letter)}
+        disabled={isGameOver}
+        aria-disabled={guessedLetters.includes(letter)}
+        aria-label={`Letter ${letter}`}
       >
         {letter.toUpperCase()}
       </button>
@@ -137,6 +159,7 @@ function App() {
 
   return (
     <>
+      {isGameWon && <ReactConfetti recycle={false} numberOfPieces={1000} />}
       <header className={styles.instructions}>
         <h3>Assembly: Endgame</h3>
         <p className={styles.secondary}>
@@ -147,6 +170,8 @@ function App() {
 
       <section
         className={[styles.statusMessage, styles[statusMessageClass]].join(" ")}
+        aria-live="polite"
+        role="status"
       >
         {renderGameStatus()}
       </section>
@@ -155,10 +180,34 @@ function App() {
 
       <section className={styles.word}>{lettersElements}</section>
 
+      {/* This is all accesibility stuff but honestly im not familiar enough with it too care, i get the feeling that only helps people with enough money */}
+      <section className={styles["sr-only"]} aria-live="polite" role="status">
+        <p>
+          {currentWord.includes(lastGuessedLetter)
+            ? `Correct! ${lastGuessedLetter} is in the word.`
+            : `Wrong. ${lastGuessedLetter} isn't in the word.`}
+          You have {numGuessesLeft} guesses left
+        </p>
+
+        <p>
+          Current word:{" "}
+          {currentWord
+            .split("")
+            .map((letter) =>
+              guessedLetters.includes(letter) ? letter + "." : "blank."
+            )
+            .join(" ")}
+        </p>
+      </section>
+
       <section className={styles.keyboard}>{keyboardElements}</section>
 
       {isGameOver && (
-        <button type="button" className={styles.newGameBtn}>
+        <button
+          type="button"
+          className={styles.newGameBtn}
+          onClick={startNewGame}
+        >
           New Game
         </button>
       )}
